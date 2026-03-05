@@ -7,7 +7,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourname/corgi-news"
+    "url": "https://github.com/Kme-me/my-news.git"
   },
   "engines": {
     "vscode": "^1.109.0"
