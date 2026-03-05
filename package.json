@@ -3,7 +3,7 @@
   "displayName": "My News",
   "description": "Read news inside VSCode",
   "version": "0.0.1",
-  "publisher": "胖三斤",
+  "publisher": "pangsanjin",
   "type": "module",
   "repository": {
     "type": "git",
