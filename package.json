@@ -1,0 +1,96 @@
+{
+  "name": "my-news",
+  "displayName": "My News",
+  "description": "Read news inside VSCode",
+  "version": "0.0.1",
+  "publisher": "胖三斤",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourname/corgi-news"
+  },
+  "engines": {
+    "vscode": "^1.109.0"
+  },
+
+  "categories": [
+    "Other"
+  ],
+
+  "activationEvents": [
+    "onView:newsList",
+    "onCommand:news.open"
+  ],
+
+  "main": "./out/extension.js",
+
+  "contributes": {
+
+    "commands": [
+      {
+        "command": "news.open",
+        "title": "Open News"
+      },
+      {
+        "command": "news.refresh",
+        "title": "Refresh News"
+      }
+    ],
+
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "news",
+          "title": "News",
+          "icon": "resources/icon_inverted.svg"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "news.refresh",
+          "when": "view == newsList",
+          "group": "navigation"
+        }
+      ]
+    },
+    "views": {
+      "news": [
+        {
+          "id": "newsList",
+          "name": "新闻列表"
+        }
+      ]
+    }
+
+  },
+
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.109.0",
+    "@types/xml2js": "^0.4.14",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.39.3",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1"
+  },
+
+  "dependencies": {
+    "axios": "^1.13.6",
+    "cheerio": "^1.2.0",
+    "marked": "^17.0.4",
+    "rss-parser": "^3.13.0"
+  }
+}
