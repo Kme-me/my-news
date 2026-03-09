@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import Parser from 'rss-parser'
-
+import axios from 'axios'
 
 // 单条新闻
 export class NewsItem extends vscode.TreeItem {
@@ -26,7 +26,7 @@ export class NewsItem extends vscode.TreeItem {
 }
 
 
-// 分类节点（左侧：国际新闻 / 国内新闻 等）
+// 分类节点
 class Category extends vscode.TreeItem {
 
   constructor(public readonly label: string) {
@@ -44,37 +44,37 @@ export class NewsProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
   readonly onDidChangeTreeData: vscode.Event<void> = this._onDidChangeTreeData.event
 
-  parser = new Parser()
+  parser = new Parser({
+    headers: {
+      'User-Agent': 'Mozilla/5.0',
+      'Accept': 'application/rss+xml, application/xml'
+    },
+    timeout: 10000
+  })
 
 
-  // RSS 分类
-  feeds: Record<string, string[]> = {
+  constructor() {
 
-    国际新闻: [
+    // 监听设置变化
+    vscode.workspace.onDidChangeConfiguration(e => {
 
-      'http://feeds.bbci.co.uk/zhongwen/simp/rss.xml',
-      'https://cn.nytimes.com/rss/nyt/World.xml'
+      if (e.affectsConfiguration('myNews.feeds')) {
 
-    ],
+        this.refresh()
 
-    国内新闻: [
+      }
 
-      'https://www.thepaper.cn/rss_newsDetail_forward_25434',
-      'http://www.xinhuanet.com/politics/news_politics.xml'
+    })
 
-    ],
+  }
 
-    科技资讯: [
 
-      'https://www.36kr.com/feed',
-      'https://www.ifanr.com/feed'
+  // 从 VSCode 设置读取 RSS 源
+  private getFeeds(): Record<string, string[]> {
 
-    ],
+    const config = vscode.workspace.getConfiguration('myNews')
 
-    程序员: [
-      'https://v2ex.com/index.xml',
-
-    ]
+    return config.get<Record<string, string[]>>('feeds') || {}
 
   }
 
@@ -96,10 +96,12 @@ export class NewsProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
   async getChildren(element?: vscode.TreeItem): Promise<vscode.TreeItem[]> {
 
+    const feeds = this.getFeeds()
+
     // 第一层：分类
     if (!element) {
 
-      return Object.keys(this.feeds).map(
+      return Object.keys(feeds).map(
         name => new Category(name)
       )
 
@@ -107,27 +109,34 @@ export class NewsProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
     const category = element.label as string
 
-    const urls = this.feeds[category]
+    const urls = feeds[category]
 
     if (!urls) return []
 
     const items: NewsItem[] = []
 
 
-    // 并发请求 RSS（优化速度）
-    const feeds = await Promise.all(
+    // 并发请求 RSS
+    const rssFeeds = await Promise.all(
 
       urls.map(async (url) => {
 
-        try {
+        try{ 
+          const res = await axios.get(url, {
+            headers: {
+              'User-Agent': 'Mozilla/5.0',
+              'Accept': 'application/rss+xml'
+            },
+            timeout: 10000
+          })
 
-          const feed = await this.parser.parseURL(url)
-
+          const feed = await this.parser.parseString(res.data)
+          console.log(feed)
           return feed.items.slice(0, 10).map(item => {
 
-            // 尝试获取摘要
             const summary =
               item.contentSnippet ??
+              (item as any).description ??
               (item as any).content ??
               (item as any).summary ??
               ''
@@ -156,8 +165,7 @@ export class NewsProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
     )
 
 
-    // 展平数组
-    feeds.forEach(f => items.push(...f))
+    rssFeeds.forEach(f => items.push(...f))
 
     return items
 

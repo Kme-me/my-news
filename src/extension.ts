@@ -36,12 +36,12 @@ export function activate(context: vscode.ExtensionContext) {
 
   )
 
-  // 自动刷新（5分钟）
+  // 自动刷新（30分钟）
   const timer = setInterval(() => {
 
     provider.refresh()
 
-  }, 5 * 60 * 1000)
+  }, 30 * 60 * 1000)
 
   context.subscriptions.push({
     dispose() {
