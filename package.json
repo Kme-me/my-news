@@ -1,6 +1,6 @@
 {
-  "name": "my-news",
-  "displayName": "My News",
+  "name": "corgi-news",
+  "displayName": "Corgi News",
   "description": "Read news inside VSCode",
   "version": "0.0.1",
   "publisher": "pangsanjin",
