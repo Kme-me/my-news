@@ -39,19 +39,15 @@
           "type": "object",
           "default": {
               "新闻": [
-                  "https://news.ifeng.com/rss/index.xml",
                   "https://rss.dw.com/rdf/rss-chi-all"
               ],
               "科技": [
-                  "https://www.36kr.com/feed"
+                  "https://www.36kr.com/feed",
+                  "https://www.solidot.org/index.rss"
               ],
               "程序员": [
                   "https://v2ex.com/index.xml",
-                  "https://www.ithome.com/rss/",
-                  "https://www.solidot.org/index.rss",
-                  "https://www.infoq.cn/feed",
-                  "https://sspai.com/feed",
-                  "https://www.pingwest.com/feed"
+                  "https://www.ithome.com/rss/"
               ]
           },
           "description": "Configurable RSS news feeds"
